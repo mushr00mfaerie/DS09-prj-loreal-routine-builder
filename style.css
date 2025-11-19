@@ -5,12 +5,30 @@
   padding: 0;
 }
 
-/* —— body + fonts —— */
+/* theme variables + fonts */
+:root {
+  --black: #000;
+  --white: #ffffff;
+  --accent: #ff003b;
+  --muted: #666666;
+  --text: #333333;
+}
+
+/* use the requested body and header fonts */
 body {
-  font-family: "Montserrat", Arial, Helvetica, sans-serif;
-  color: #333;
+  font-family: "Helvetica Now Display W05 Reg", Arial, Helvetica, sans-serif;
+  color: var(--text);
   display: flex;
   justify-content: center;
+}
+
+/* headers and menu fonts */
+.site-header,
+.site-title,
+.site-footer,
+.site-footer nav {
+  font-family: "Halesworth eText Bold", "Helvetica Now Display W05 Reg", Arial,
+    sans-serif;
 }
 
 .page-wrapper {
@@ -148,24 +166,6 @@ body {
   border: 0;
 }
 
-/* footer */
-.site-footer {
-  margin: 60px 0 40px;
-  text-align: center;
-  font-size: 14px;
-  color: #666;
-}
-
-.site-footer nav {
-  margin-top: 12px;
-}
-
-.site-footer a {
-  margin: 0 8px;
-  color: #000;
-  text-decoration: none;
-}
-
 .site-footer a:hover {
   color: #666666;
 }
@@ -186,6 +186,18 @@ body {
   display: flex;
   gap: 15px;
   min-height: 160px;
+
+  /* new: allow smooth raise + glow when selected */
+  transition: transform 180ms ease, box-shadow 180ms ease;
+
+  /* ensure overlays position correctly if present */
+  position: relative;
+}
+
+/* selected visual state: raise + red glow (#ff003b) */
+.product-card.selected {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18), 0 0 12px rgba(255, 0, 59, 0.36); /* rgba of #ff003b */
 }
 
 .product-card img {
@@ -252,4 +264,47 @@ body {
 
 .generate-btn i {
   margin-right: 8px;
+}
+
+/* make card focus visible for keyboard users */
+.product-card:focus {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+/* description overlay that appears on hover / keyboard focus */
+.product-desc {
+  position: absolute;
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  background: rgba(255, 255, 255, 0.98);
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  display: none; /* hidden by default */
+  display: none;
+  /* don't change card size because it's absolute */
+}
+
+/* show overlay on hover and keyboard focus */
+.product-card:hover .product-desc,
+.product-card:focus-within .product-desc {
+  display: block;
+}
+
+/* overlay content */
+.product-desc .desc-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.product-desc .desc-body {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.4;
+  /* ensure long descriptions scroll within the overlay without resizing the card */
+  overflow: auto;
+  max-height: calc(100% - 28px);
+  padding-right: 6px; /* space for scrollbar */
 }
