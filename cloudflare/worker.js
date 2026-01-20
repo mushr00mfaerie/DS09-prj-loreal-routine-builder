@@ -46,7 +46,7 @@ async function handleRequest(request) {
   }
 
   // Ensure your OPENAI_API_KEY is bound as a secret to the worker
-  // Note: We're reusing the same secret name, but it will contain your Mistral key
+  // Note: The secret is named OPENAI_API_KEY but contains your Mistral API key
   if (typeof OPENAI_API_KEY === "undefined" || !OPENAI_API_KEY) {
     return jsonResponse(
       { error: "Server misconfigured: OPENAI_API_KEY not set" },
@@ -55,7 +55,7 @@ async function handleRequest(request) {
   }
 
   try {
-    // Change to Mistral's API endpoint
+    // Use Mistral AI's API endpoint instead of OpenAI's
     const openaiResp = await fetch(
       "https://api.mistral.ai/v1/chat/completions",
       {
@@ -78,6 +78,6 @@ async function handleRequest(request) {
       ),
     });
   } catch (err) {
-    return jsonResponse({ error: "Request to Mistral failed" }, 502);
+    return jsonResponse({ error: "Request to Mistral AI failed" }, 502);
   }
 }
