@@ -81,3 +81,4 @@ async function handleRequest(request) {
     return jsonResponse({ error: "Request to Mistral AI failed" }, 502);
   }
 }
+
