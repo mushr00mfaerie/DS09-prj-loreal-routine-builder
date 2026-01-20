@@ -436,7 +436,7 @@ if (generateBtn) {
   });
 }
 
-// --- Helper UI functions: append messages, status, scroll ---
+// -- Helper UI functions: append messages, status, scroll --
 function appendChatMessage(role, text) {
   // simple bubble layout with inline minimal styles so no CSS change is required
   const wrapper = document.createElement("div");
