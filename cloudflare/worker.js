@@ -1,10 +1,3 @@
-/* Simple Cloudflare Worker to proxy OpenAI requests so the API key is not exposed in the browser.
-   - Bind your OpenAI API key as a secret named OPENAI_API_KEY in Cloudflare (wrangler secret or dashboard).
-   - The frontend should POST JSON: { messages: [...], model?: "gpt-4o" }
-   - This worker forwards the request to OpenAI and returns the response JSON.
-   - Beginner-friendly: uses async/await and fetch, no external libs.
-*/
-
 addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
 });
@@ -21,7 +14,7 @@ function jsonResponse(obj, status = 200) {
     status,
     headers: Object.assign(
       { "Content-Type": "application/json" },
-      CORS_HEADERS
+      CORS_HEADERS,
     ),
   });
 }
@@ -45,23 +38,26 @@ async function handleRequest(request) {
   }
 
   const messages = body.messages;
-  const model = body.model || "gpt-4o";
+  // Default to Mistral's model instead of OpenAI's
+  const model = body.model || "mistral-large-latest";
 
   if (!Array.isArray(messages) || messages.length === 0) {
     return jsonResponse({ error: "Missing or invalid messages array" }, 400);
   }
 
   // Ensure your OPENAI_API_KEY is bound as a secret to the worker
+  // Note: We're reusing the same secret name, but it will contain your Mistral key
   if (typeof OPENAI_API_KEY === "undefined" || !OPENAI_API_KEY) {
     return jsonResponse(
       { error: "Server misconfigured: OPENAI_API_KEY not set" },
-      500
+      500,
     );
   }
 
   try {
+    // Change to Mistral's API endpoint
     const openaiResp = await fetch(
-      "https://api.openai.com/v1/chat/completions",
+      "https://api.mistral.ai/v1/chat/completions",
       {
         method: "POST",
         headers: {
@@ -69,7 +65,7 @@ async function handleRequest(request) {
           Authorization: `Bearer ${OPENAI_API_KEY}`,
         },
         body: JSON.stringify({ model, messages }),
-      }
+      },
     );
 
     const data = await openaiResp.json();
@@ -78,10 +74,10 @@ async function handleRequest(request) {
       status: openaiResp.status,
       headers: Object.assign(
         { "Content-Type": "application/json" },
-        CORS_HEADERS
+        CORS_HEADERS,
       ),
     });
   } catch (err) {
-    return jsonResponse({ error: "Request to OpenAI failed" }, 502);
+    return jsonResponse({ error: "Request to Mistral failed" }, 502);
   }
 }
