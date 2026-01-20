@@ -155,7 +155,7 @@ function displayProducts(products) {
 		    <div class="desc-body">${product.description}</div>
 		  </div>
 		</div>
-	  `
+	  `,
     )
     .join("");
 
@@ -184,7 +184,7 @@ function displayProducts(products) {
       };
 
       const index = selectedProducts.findIndex(
-        (p) => String(p.id) === String(product.id)
+        (p) => String(p.id) === String(product.id),
       );
       if (index === -1) {
         // select
@@ -236,7 +236,7 @@ function renderSelectedProducts() {
 		  </div>
 		  <button class="remove-selected" data-id="${p.id}">Remove</button>
 		</div>
-	`
+	`,
     )
     .join("");
 
@@ -249,7 +249,7 @@ function renderSelectedProducts() {
 
       // remove visual selection from visible card if present
       const card = productsContainer.querySelector(
-        `.product-card[data-id="${id}"]`
+        `.product-card[data-id="${id}"]`,
       );
       if (card) {
         card.classList.remove("selected");
@@ -270,7 +270,7 @@ categoryFilter.addEventListener("change", async (e) => {
   /* filter() creates a new array containing only products 
 	   where the category matches what the user selected */
   const filteredProducts = products.filter(
-    (product) => product.category === selectedCategory
+    (product) => product.category === selectedCategory,
   );
 
   displayProducts(filteredProducts);
@@ -294,13 +294,17 @@ chatForm.addEventListener("submit", async (e) => {
   input.value = "";
   const statusEl = appendStatus("Generating response...");
 
-  // Send full history to worker
+  // Send full history to worker with Mistral model
   const WORKER_URL = "https://lorealprj2.dasherr1.workers.dev/";
   try {
     const resp = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: messagesHistory, model: "gpt-4o" }),
+      // Use Mistral's model name
+      body: JSON.stringify({
+        messages: messagesHistory,
+        model: "mistral-large-latest",
+      }),
     });
 
     if (!resp.ok) {
@@ -308,7 +312,7 @@ chatForm.addEventListener("submit", async (e) => {
       removeStatus(statusEl);
       appendChatMessage(
         "assistant",
-        `Error from server: ${resp.status} ${errText}`
+        `Error from server: ${resp.status} ${errText}`,
       );
       return;
     }
@@ -334,7 +338,7 @@ chatForm.addEventListener("submit", async (e) => {
     removeStatus(statusEl);
     appendChatMessage(
       "assistant",
-      "Failed to generate response. See console for details."
+      "Failed to generate response. See console for details.",
     );
     console.error("Chat submit error:", err);
   }
@@ -349,7 +353,7 @@ if (generateBtn) {
     if (selectedProducts.length === 0) {
       appendChatMessage(
         "assistant",
-        "Please select one or more products first."
+        "Please select one or more products first.",
       );
       return;
     }
@@ -366,7 +370,7 @@ if (generateBtn) {
           description: p.description,
         })),
         null,
-        2
+        2,
       );
 
     // Show only a single status indicator in the chat window (no user message)
@@ -384,7 +388,11 @@ if (generateBtn) {
       const resp = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: messagesToSend, model: "gpt-4o" }),
+        // Use Mistral's model name
+        body: JSON.stringify({
+          messages: messagesToSend,
+          model: "mistral-large-latest",
+        }),
       });
 
       if (!resp.ok) {
@@ -392,7 +400,7 @@ if (generateBtn) {
         removeStatus(statusEl);
         appendChatMessage(
           "assistant",
-          `Error from server: ${resp.status} ${errText}`
+          `Error from server: ${resp.status} ${errText}`,
         );
         return;
       }
@@ -414,14 +422,14 @@ if (generateBtn) {
       } else {
         appendChatMessage(
           "assistant",
-          "No content returned from the AI. Check the worker and OpenAI response."
+          "No content returned from the AI. Check the worker and OpenAI response.",
         );
       }
     } catch (err) {
       removeStatus(statusEl);
       appendChatMessage(
         "assistant",
-        "Failed to generate routine. See console for details."
+        "Failed to generate routine. See console for details.",
       );
       console.error("Generate routine error:", err);
     }
